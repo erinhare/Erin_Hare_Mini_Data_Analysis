@@ -1,6 +1,6 @@
 ---
 title: "Mini Data Analysis Milestone 2"
-output: html_document
+output: github_document
 ---
 
 *To complete this milestone, you can edit [this `.rmd` file](https://raw.githubusercontent.com/UBC-STAT/stat545.stat.ubc.ca/master/content/mini-project/mini-project-2.Rmd) directly. Fill in the sections that are commented out with `<!--- start your work here--->`. When you are done, make sure to knit to an `.md` file by changing the output in the YAML header to `github_document`, before submitting a tagged release on canvas.*
@@ -61,7 +61,19 @@ A reminder of the definition of *tidy* data:
 Based on the definition above, can you identify if your data is tidy or untidy? Go through all your columns, or if you have \>8 variables, just pick 8, and explain whether the data is untidy or tidy.
 
 <!--------------------------- Start your work below --------------------------->
+```{r}
+cancer_sample
+```
+Each cell in the ID column contains each individuals patient ID.
+Each cell in the diagnosis column contains an M or B which applies to the individual patient based on their ID.
+Each cell in the radius_mean column contains the mean radius measurement that applies to the patient based on their ID.
+Each cell in the radius_se column contains the radius standard error for each patient based on their ID.
+Each cell in the radius_worst column contains the worst radius measurement for each patient based on their ID. 
+Each cell in the area_mean column contains the mean area measurement that applies to the patient based on their ID.
+Each cell in the area_se column contains the area standard error for each patient based on their ID.
+Each cell in the area_worst column contains the worst area measurement for each patient based on their ID. 
 
+Based on reviewing these 8 variables, the data is tidy because each column is a different variable, each row represents a different patient using their individual ID, and each cell contains a single measurement or diagnosis value.
 <!----------------------------------------------------------------------------->
 
 ### 2.2 (5 points)
@@ -73,7 +85,23 @@ If your data is untidy, then tidy it! Then, untidy it back to it's original stat
 Be sure to explain your reasoning for this task. Show us the "before" and "after".
 
 <!--------------------------- Start your work below --------------------------->
+The original state of the data is tidy since each row represents an individual patient based on their unique ID. Each column is a variable and each cell is an diagnostic or measurement value that applies to the patient ID.
 
+The following code is used to untidy the data by making the tibble longer. This results in multiple rows containing the same patient ID since each row contains a different measurement type so the "measurement_type" column contains multiple variables. 
+
+```{r}
+untidy_cancer_sample <- cancer_sample %>% pivot_longer(cols = c(-ID, -diagnosis),
+                               names_to = "measurement_type",
+                               values_to = "measurement")
+untidy_cancer_sample
+```
+The next code is used to widen the tibble which organizes the data back into it's tidy state.
+```{r}
+tidy_cancer_sample <- untidy_cancer_sample %>% pivot_wider(id_cols = c(ID, diagnosis),
+                                                           names_from = measurement_type,
+                                                           values_from = measurement)
+tidy_cancer_sample
+```
 <!----------------------------------------------------------------------------->
 
 ### 2.3 (7.5 points)
@@ -82,20 +110,39 @@ Now, you should be more familiar with your data, and also have made progress in 
 
 <!-------------------------- Start your work below ---------------------------->
 
-1.  *FILL_THIS_IN*
-2.  *FILL_THIS_IN*
+1.  *What proportion of individuals with a malignant tumor diagnosis have an area_mean greater than 200?*
+2.  *Is the relationship between concave_points_mean and concavity_mean the same between B and M diagnosis and what is the relationship?*
 
 <!----------------------------------------------------------------------------->
 
 Explain your decision for choosing the above two research questions.
 
 <!--------------------------- Start your work below --------------------------->
+The first question was selected because it can be used in task 2 since the area_mean variable was divided into three categories in Milestone 1.
+
+The second question was selected because it can be used in task 3 since the question is asking about the relationship between two variables which can be viewed in a model.
 
 <!----------------------------------------------------------------------------->
 
 Now, try to choose a version of your data that you think will be appropriate to answer these 2 questions. Use between 4 and 8 functions that we've covered so far (i.e. by filtering, cleaning, tidy'ing, dropping irrelevant columns, etc.).
 
 <!--------------------------- Start your work below --------------------------->
+Question 1
+```{r}
+cancer_sample_1 <- cancer_sample %>% 
+  select(ID, diagnosis, area_mean) %>%
+  filter(diagnosis == "M") %>%
+  arrange(area_mean) %>%
+  mutate(area_mean_category = case_when(area_mean < 800 ~ "small",
+                                        area_mean < 1200 ~ "medium",
+                                        area_mean < 2502 ~ "large"))
+cancer_sample_1
+```
+Question 2
+```{r}
+cancer_sample_2 <- select(cancer_sample, c("ID", "diagnosis", "concave_points_mean", "concavity_mean"))
+cancer_sample_2
+```
 
 <!----------------------------------------------------------------------------->
 
@@ -106,7 +153,15 @@ For this exercise, you'll be choosing two of the three tasks below -- both tasks
 But first, tasks 1 and 2 below ask you to modify a plot you made in a previous milestone. The plot you choose should involve plotting across at least three groups (whether by facetting, or using an aesthetic like colour). Place this plot below (you're allowed to modify the plot if you'd like). If you don't have such a plot, you'll need to make one. Place the code for your plot below.
 
 <!-------------------------- Start your work below ---------------------------->
+```{r}
+cancer_sample_1 %>%
+  ggplot(aes(area_mean_category)) +
+  geom_bar()
 
+cancer_sample_1 %>%
+  ggplot(aes(area_mean_category, area_mean)) +
+  geom_boxplot()
+```
 <!----------------------------------------------------------------------------->
 
 Now, choose two of the following tasks.
@@ -128,14 +183,30 @@ Now, choose two of the following tasks.
 
 <!-------------------------- Start your work below ---------------------------->
 
-**Task Number**: FILL_THIS_IN
+**Task Number**: 1
+```{r}
+cancer_sample_1 %>%
+  mutate(area_mean_category = fct_inorder(area_mean_category)) %>%
+  ggplot(aes(area_mean_category)) +
+  geom_bar()
+```
 
+The original ordering of the bars was large, medium, small and has been reordered to small, medium, large since it makes more sense visually to view the mean area from smallest to largest categories going from left to right.
 <!----------------------------------------------------------------------------->
 
 <!-------------------------- Start your work below ---------------------------->
 
-**Task Number**: FILL_THIS_IN
+**Task Number**: 2
 
+```{r}
+cancer_sample_1$area_mean_category <- as.factor(cancer_sample_1$area_mean_category)
+cancer_sample_1 %>%
+  mutate(area_mean_category = fct_other(area_mean_category, keep = c("large"))) %>%
+  ggplot(aes(area_mean_category, area_mean)) +
+  geom_boxplot()
+```
+
+The original boxplot contained three categories (small, medium, and large). The "small" and "medium" categories have been grouped into an "other" category since the first research question is interested in individuals with an area_mean greater than 200 which are those in the large category. The question is not interested in individuals in the small and medium category so it is appropriate to group them into an "other" category.
 <!----------------------------------------------------------------------------->
 
 # Task 3: Modelling
@@ -146,9 +217,9 @@ Pick a research question, and pick a variable of interest (we'll call it "Y") th
 
 <!-------------------------- Start your work below ---------------------------->
 
-**Research Question**: FILL_THIS_IN
+**Research Question**: Is the relationship between concave_points_mean and concavity_mean the same between B and M diagnosis and what is the relationship?
 
-**Variable of interest**: FILL_THIS_IN
+**Variable of interest**: concave_points_mean
 
 <!----------------------------------------------------------------------------->
 
@@ -163,6 +234,10 @@ Fit a model or run a hypothesis test that provides insight on this variable with
     -   You could use `lm()` to test for significance of regression.
 
 <!-------------------------- Start your work below ---------------------------->
+```{r}
+concave_points_mean_lm <- lm(concave_points_mean ~ concavity_mean, cancer_sample_2)
+concave_points_mean_lm
+```
 
 <!----------------------------------------------------------------------------->
 
@@ -175,7 +250,11 @@ Produce something relevant from your fitted model: either predictions on Y, or a
 -   Obtain your results using the `broom` package if possible. If your model is not compatible with the broom function you're needing, then you can obtain your results by some other means, but first indicate which broom function is not compatible.
 
 <!-------------------------- Start your work below ---------------------------->
-
+The following code is used to produce the p-value which is found in column 5 "p.value". The concavity_mean predictor variable is statistically significant since the p-value is less than 0.05.
+```{r}
+library(broom)
+broom::tidy(concave_points_mean_lm)
+```
 <!----------------------------------------------------------------------------->
 
 # Task 4: Reading and writing data
@@ -190,7 +269,10 @@ Take a summary table that you made from Milestone 1 (Task 4.2), and write it as 
 -   **Reproducibility criteria**: You should be able to delete the csv file, and remake it simply by knitting this Rmd file.
 
 <!-------------------------- Start your work below ---------------------------->
-
+```{r}
+dir.create(here::here("output"))
+write.csv(cancer_sample %>% group_by(diagnosis) %>% summarise(area_worst = range(area_worst, na.rm = TRUE)), here::here("output", "area_worst_range.csv"))
+```
 <!----------------------------------------------------------------------------->
 
 ## 3.2 (5 points)
@@ -200,7 +282,11 @@ Write your model object from Task 3 to an R binary file (an RDS), and load it ag
 -   The same robustness and reproducibility criteria as in 3.1 apply here.
 
 <!-------------------------- Start your work below ---------------------------->
-
+```{r}
+library(here)
+saveRDS(concave_points_mean_lm, file = here("output", "concave_points_mean_lm.rds"))
+readRDS(here("output", "concave_points_mean_lm.rds"))
+```
 <!----------------------------------------------------------------------------->
 
 # Tidy Repository
