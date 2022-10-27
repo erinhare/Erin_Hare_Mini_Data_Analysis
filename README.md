@@ -2,6 +2,12 @@
 
 Stat 545A Mini Data Analysis Project
 
-This repository contains a **mini-project-1.md** file which explores the cancer_sample dataset from UCI Machine Learning Repository. This dataset currently has 569 rows and 32 columns. After exploring this dataset 4 questions were asked and a summarizing and graphing tasks were performed in an attempt to answer each research question.
+The cancer_sample dataset from UCI Machine Learning Repository is used in this repository. 
 
-The **mini-project-1.Rmd** file contains the same information as the mini-project-1.md file. The code in the this document can be run using R. R version 4.2.1 (2022-06-23) and RStudio 2022.07.1 were used.
+This repository contains a **Milestone 1** folder which contains a README.md file, mini-project-1_files folder, a mini-project-1.md file, and a mini-project-1.Rmd file.
+
+The **Milestone 2** folder contains a README.md file, mini-project-2_files folder, a mini-project-2.md file, and a mini-project-2.Rmd file.
+
+The **Output** folder contains a README.md file, an area_worst_range.csv file, and a concave_points_mean_lm.rds file which were generated in Milestone 2.
+
+The code in the Rmd documents can be run using R. R version 4.2.1 (2022-06-23) and RStudio 2022.07.1 were used.
