@@ -1,8 +1,8 @@
 # Erin_Hare_Mini_Data_Analysis
 
-Stat 545A Mini Data Analysis Project
+### Stat 545A Mini Data Analysis Project
 
-The cancer_sample dataset from UCI Machine Learning Repository is used in this repository. 
+The cancer_sample dataset from UCI Machine Learning Repository is used in this repository to complete Milestone 1 and 2 for the STAT 545A Mini Data Analysis Project. 
 
 This repository contains a **Milestone 1** folder which contains a README.md file, mini-project-1_files folder, a mini-project-1.md file, and a mini-project-1.Rmd file.
 
