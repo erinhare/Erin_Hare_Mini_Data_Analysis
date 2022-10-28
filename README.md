@@ -10,4 +10,6 @@ The **Milestone 2** folder contains a README.md file, mini-project-2_files folde
 
 The **Output** folder contains a README.md file, an area_worst_range.csv file, and a concave_points_mean_lm.rds file which were generated in Milestone 2.
 
-The code in the Rmd documents can be run using R. R version 4.2.1 (2022-06-23) and RStudio 2022.07.1 were used.
+Each folder's README.md file further describes the contents of the folder. 
+
+The code in the Rmd documents and the rds file contents can be run using R. R version 4.2.1 (2022-06-23) and RStudio 2022.07.1 were used.
